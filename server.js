@@ -1,63 +1,55 @@
-const express = require('express'); // express is what we just installed // 
-const path = require('path'); // path allows us to join paths // 
+// requiring packages for use in server
+const express = require('express');
+const path = require('path');
+// uniqid will create a randomized id for every note
+const uniqid = require('uniqid');
 const fs = require('fs');
-const { randomUUID } = require('crypto');
 
-const app = express(); // execute express ///
-const PORT = process.env.PORT || 3001; // set constant for port number // all caps means we should never change it // 
+// setting port so it will either run on Heroku host or locally
+const PORT = process.env.PORT || 3001;
+const app = express();
 
-app.use(express.urlencoded({ extended: false }));
+// middleware for use app.post and accessing public folder
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static('public'));
 
-app.use(express.static('public')); // middle ware - what happens inbetween our requests and our responses // serve a static directory called 'public' //
-app.get('/api/notes', function (req, res) {
-  fs.readFile('./db/db.json', 'utf-8', function (err, data) {
-    res.json(JSON.parse(data))
-  })
-})
+// setting the landing page and /notes pages to their respective HTMLs
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public/index.html')));
+app.get('/notes', (req, res) => res.sendFile(path.join(__dirname, 'public/notes.html')));
 
-app.post('/api/notes', function (req, res) {
-  const { title, text } = req.body;
+// will read the json file and return a response of that data array
+app.get('/api/notes', (req, res) => {
+    const notesData = fs.readFileSync('./db/db.json', 'utf8');
+    const notesArr = notesData.length ? JSON.parse(notesData) : [];
+    return res.json(notesArr);
+});
 
-  if (title && text) {
-    const newNote = {
-      title,
-      text,
-      id: randomUUID()
-    };
+// bad paths will lead to the index page
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public/index.html')));
 
-    fs.readFile('./db/db.json', 'utf-8', (err, data) => {
-      if (err) {
-        console.error(err);
-      } else {
-        const parsedNotes = JSON.parse(data);
+// allows user to post new notes - first reads the json file and creates a data array, then pushes the new note with a unique id into that array, stringifies it, and then writes to file
+app.post('/api/notes', (req, res) => {
+    if (req.body) {
+        const notesData = fs.readFileSync('./db/db.json', 'utf8');
+        const notesArr = notesData.length ? JSON.parse(notesData) : [];
+        notesArr.push({ ...req.body, id: uniqid() })
+        const notesString = JSON.stringify(notesArr, null, 2);
 
-        parsedNotes.push(newNote);
+        fs.writeFile('./db/db.json', notesString, err => err ? console.log(err) : res.json('Note added!'));
+    } else return res.json('Note must contain data.');
+});
 
-        fs.writeFile(
-          './db/db.json',
-          JSON.stringify(parsedNotes, null, 2),
-          (writeErr) =>
-            writeErr
-              ? console.error(writeErr)
-              : console.log('Successfully updated notes')
-        );
-      }
-    })
-  }
-})
+// delete request for specific notes. Reads the file and makes a data array, filters the array based on the searched for id value, stringfies the new notes without the searched note, and writes to file so the searched note is removed from the json.
+app.delete('/api/notes/:id', (req, res) => {
+    const notesData = fs.readFileSync('./db/db.json', 'utf8');
+    const notesArr = notesData.length ? JSON.parse(notesData) : [];
+    const requestedNote = req.params.id;
+    const notes = notesArr.filter(note => note.id !== requestedNote);
+    const dbString = JSON.stringify(notes, null, 2);
 
-app.get('/notes', function (req, res) {
-  res.sendFile(path.join(__dirname, './public', 'notes.html'));
-})
+    fs.writeFile('./db/db.json', dbString, err => err ? console.log(err) : res.json('Note deleted!'));
+});
 
-app.get('*', function (req, res) {
-  res.sendFile(path.join(__dirname, './public', 'index.html'));
-})
-
-
-
-
-app.listen(PORT, () =>
-  console.log(`Example app listening at http://localhost:${PORT}`)
-);
+// listening for responses
+app.listen(PORT, () => console.log(`Page is at http://localhost:${PORT}`));
