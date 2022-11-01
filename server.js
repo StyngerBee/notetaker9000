@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const api = require('./routes/index.js');
+const api = require('./routes/indexRoute.js');
 // Port for localhost
 const PORT = process.env.PORT || 3001;
 // Variable for using express

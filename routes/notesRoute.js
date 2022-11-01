@@ -1,6 +1,6 @@
 const notes = require('express').Router();
-const { readFromFile, readAndAppend, writeToFile } = require('../helpers/fsUtils');
-const uuid = require('../helpers/uuid');
+const { readFromFile, readAndAppend, writeToFile } = require('../db/fs');
+const uuid = require('../db/uuId');
 const db = require('../db/db.json')
 
 // GET Route for retrieving all the feedback
