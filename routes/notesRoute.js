@@ -4,14 +4,10 @@ const uuid = require('../helpers/uuId');
 const db = require('../db/db.json')
 
 anote.get('/', (req, res) => {
-  console.info(`${req.method} request received for `);
-
   readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
 });
 
 anote.post('/', (req, res) => {
-  console.info(`${req.method} request received for `);
-    
   const { title, text } = req.body;
 
   if (title && text) {
