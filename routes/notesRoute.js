@@ -1,16 +1,15 @@
-const notes = require('express').Router();
+const anote = require('express').Router();
 const { readFromFile, readAndAppend, writeToFile } = require('../helpers/fsUtils');
 const uuid = require('../helpers/uuId');
 const db = require('../db/db.json')
 
-notes.get('/', (req, res) => {
+anote.get('/', (req, res) => {
   console.info(`${req.method} request received for `);
 
   readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
 });
 
-
-notes.post('/', (req, res) => {
+anote.post('/', (req, res) => {
   console.info(`${req.method} request received for `);
     
   const { title, text } = req.body;
@@ -37,7 +36,7 @@ notes.post('/', (req, res) => {
 
 });
 
-notes.delete('/:id', (req, res) => {
+anote.delete('/:id', (req, res) => {
   const deleteId = JSON.parse(req.params.id);
   readFileAsync('./db/db.json', 'utf8').then(function(data) {
     const notes = [].concat(JSON.parse(data));
@@ -54,4 +53,4 @@ notes.delete('/:id', (req, res) => {
   })
 });
 
-module.exports = notes;
+module.exports = anote;
