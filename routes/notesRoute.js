@@ -1,7 +1,8 @@
 const anote = require('express').Router();
 const { readFromFile, readAndAppend, writeToFile } = require('../helpers/fsUtils');
 const uuid = require('../helpers/uuId');
-const db = require('../db/db.json')
+const db = require('../db/db.json');
+const { json } = require('express');
 
 anote.get('/', (req, res) => {
   readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
@@ -31,9 +32,14 @@ anote.post('/', (req, res) => {
 
 });
 
-anote.delete('/:id', (req, res) => {
-  const destroyId = JSON.parse(req.params.id);
-  
-});
+// anote.delete('/:id', (req, res) => {
+//   const destroyId = req.params.id;
+//   readFromFile('./db/db.json')
+//     .then((data) => JSON.parse(data))
+//     .then((json) => {
+//       const product = json.filter((note) => note.id != destroyId);
+//       writeToFile('./db/db.json', product);
+//     });
+// });
 
 module.exports = anote;
