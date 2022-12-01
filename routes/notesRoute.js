@@ -31,21 +31,9 @@ anote.post('/', (req, res) => {
 
 });
 
-// anote.delete('/:id', (req, res) => {
-//   const deleteId = JSON.parse(req.params.id);
-//   readFileAsync('./db/db.json', 'utf8').then(function(data) {
-//     const notes = [].concat(JSON.parse(data));
-//     const newNotes = []
-//     for (let i = 0; i < notes.length; i++) {
-//       if(deleteId !== notes[i].id) {
-//         newNotes.push(notes[i])
-//       }
-//     }
-//     return newNotes
-//   }).then(function (notes) {
-//     writeFileAsync('../db/db.json', JSON.stringify(notes))
-//     res.send('notes updated')
-//   })
-// });
+anote.delete('/:id', (req, res) => {
+  const destroyId = JSON.parse(req.params.id);
+  
+});
 
 module.exports = anote;
