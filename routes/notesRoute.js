@@ -17,7 +17,6 @@ anote.post('/', (req, res) => {
       text,
       id: uuid(),
     };
-
     readAndAppend(newNote, './db/db.json');
 
     const response = {

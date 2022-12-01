@@ -1,31 +1,26 @@
+// global modules
 const express = require('express');
 const path = require('path');
 const api = require('./routes/indexRoute.js');
-// Port for localhost
-const PORT = process.env.PORT || 3001;
-// Variable for using express
-const app = express();
 
-// Middleware to parse JSON and urlencoded data
+// global variables
+const PORT = process.env.PORT || 3001;
+const app = express();
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Route to api
+// Routes to apis
 app.use('/api', api);
-
 app.use(express.static('public'));
-
-// GET Route to the homepage
+// Routes to the homepage
 app.get('/', (req, res) =>
   res.sendFile(path.join(__dirname, '/public/index.html'))
 );
-
-// GET Route to the notes page
+// Routes to the notes page
 app.get('/notes', (req, res) =>
   res.sendFile(path.join(__dirname, '/public/notes.html'))
 );
-
-// LocalHost
+// LocalHost address listening for requests to client
 app.listen(PORT, () =>
   console.log(`App listening at http://localhost:${PORT} `)
 );
